@@ -1,36 +1,48 @@
+// Simple server.js for testing
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
 
-// Routes
-const clientRoutes = require('./routes/clientRoutes');
-const templateRoutes = require('./routes/templateRoutes');
-const campaignRoutes = require('./routes/campaignRoutes');
-
-// Load env vars
-dotenv.config();
-
-// Connect to database
-connectDB();
-
+// Create Express app
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 10000;
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Basic middleware
+app.use(express.json());
+app.use(cors({
+  origin: ['https://webwavestudio.online', 'http://localhost:3000', 'http://localhost:3001'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-// Use routes
-app.use('/api/clients', clientRoutes);
-app.use('/api/templates', templateRoutes);
-app.use('/api/campaigns', campaignRoutes);
-
-// Base route
+// Simple test routes
 app.get('/', (req, res) => {
-  res.send('CRM API is running...');
+  res.send('CRM API Root - Working!');
+});
+
+app.get('/api', (req, res) => {
+  res.json({ message: 'API endpoint working!', status: 'OK' });
+});
+
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Test endpoint working!', status: 'OK' });
+});
+
+// Simple auth test routes
+app.post('/api/auth/register', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Register endpoint reached',
+    receivedData: req.body
+  });
+});
+
+app.post('/api/auth/login', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Login endpoint reached',
+    receivedData: req.body
+  });
 });
 
 // Start server
